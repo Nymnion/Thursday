@@ -1,20 +1,19 @@
 // Chat container reference
 const chatContainer = document.getElementById('chat-container');
 
-// Default Twitch colors for users who haven't set a color
+// Default Twitch colors
 const DEFAULT_COLORS = [
     '#FF0000', '#0000FF', '#008000', '#B22222', '#FF7F50',
     '#9ACD32', '#FF4500', '#2E8B57', '#DAA520', '#D2691E',
     '#5F9EA0', '#1E90FF', '#FF69B4', '#8A2BE2', '#00FF7F'
 ];
 
-// Get color for user - either their set color or a consistent generated one
+// Get color for user
 function getUserColor(tags) {
     if (tags.color) {
         return tags.color;
     }
     
-    // Generate consistent color based on username
     const hash = tags['display-name'].split('').reduce((acc, char) => {
         return char.charCodeAt(0) + ((acc << 5) - acc);
     }, 0);
@@ -42,9 +41,19 @@ function onMessageHandler(target, context, msg, self) {
     const messageSpan = document.createElement('span');
     messageSpan.className = 'message';
     
-    // First sanitize the raw message
+    // Check for spawn command
+    const spawnMatch = msg.match(/^\+spawn\s+(\S+)\s+(\d+)/);
+    if (spawnMatch && emoteMap.has(spawnMatch[1])) {
+        gameManager.handleSpawnAttempt(
+            context['display-name'],
+            spawnMatch[1],
+            spawnMatch[2],
+            context
+        );
+    }
+
+    // Process message normally
     const sanitizedMessage = sanitizeText(msg);
-    // Then process emotes on the sanitized message
     messageSpan.innerHTML = processEmotes(sanitizedMessage);
 
     messageElement.appendChild(usernameSpan);
@@ -55,7 +64,7 @@ function onMessageHandler(target, context, msg, self) {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// Handle successful connection
+// Handle connection
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
     const messageElement = document.createElement('div');

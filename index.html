@@ -8,12 +8,37 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="chat-container"></div>
+    <div class="game-container">
+        <!-- Left sidebar -->
+        <div class="sidebar">
+            <div id="chat-container"></div>
+            <div id="tribe-list">
+                <h3>Tribes</h3>
+                <div id="tribe-members"></div>
+            </div>
+        </div>
 
-    <!-- Load our JS files -->
-    <script src="js/client.js"></script>
+        <!-- Main game area -->
+        <div class="main-content">
+            <div class="tick-control">
+                <div id="tick-timer">Next tick in: 5s</div>
+                <input type="range" id="tick-slider" min="3" max="15" value="5">
+                <div class="tick-labels">
+                    <span>3s</span>
+                    <span>15s</span>
+                </div>
+            </div>
+            
+            <div id="game-grid"></div>
+        </div>
+    </div>
+
+    <!-- Load our JS files in correct order -->
     <script src="js/emoteHandler.js"></script>
+    <script src="js/gameManager.js"></script>
+    <script src="js/tribeManager.js"></script>
     <script src="js/messageHandler.js"></script>
+    <script src="js/client.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

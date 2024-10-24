@@ -1,12 +1,11 @@
-// Initialize emotes first
+// Initialize chat and game managers
+const gameManager = new GameManager();
+const tribeManager = new TribeManager();
+
+// Initialize the client
+const client = createTwitchClient();
+
+// Connect to Twitch
 initializeEmotes().then(() => {
-    // Initialize chat client
-    const tmiClient = createTwitchClient();
-
-    // Register event handlers
-    tmiClient.on('message', onMessageHandler);
-    tmiClient.on('connected', onConnectedHandler);
-
-    // Connect to Twitch
-    tmiClient.connect().catch(console.error);
+    client.connect().catch(console.error);
 });
