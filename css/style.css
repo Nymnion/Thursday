@@ -27,6 +27,21 @@ body {
     overflow-y: auto;
 }
 
+.chat-message {
+    margin-bottom: 8px;
+    word-wrap: break-word;
+}
+
+.username {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.chat-emote {
+    vertical-align: middle;
+    margin: -5px 0;
+}
+
 #tribe-list {
     height: 40%;
     background-color: #18181b;
@@ -50,6 +65,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    max-width: calc(100% - 340px);
 }
 
 .tick-control {
@@ -57,6 +73,12 @@ body {
     background: #18181b;
     padding: 16px;
     border-radius: 4px;
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
 }
 
 #tick-timer {
@@ -64,7 +86,7 @@ body {
     margin-bottom: 10px;
 }
 
-#tick-slider {
+#tick-slider, #win-condition-slider {
     width: 200px;
     margin: 10px 0;
 }
@@ -79,24 +101,23 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 8px;
-    max-width: 1000px;
     width: 100%;
+    max-width: 800px;
     aspect-ratio: 1;
+    margin: 0 auto;
 }
 
 .grid-cell {
+    position: relative;
+    aspect-ratio: 1;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
-    font-weight: bold;
-    transition: all 0.3s ease;
     background-color: #2a2a2a;
     border: 2px solid #3a3a3a;
     color: white;
-    min-height: 128px;
 }
 
 .grid-number {
@@ -108,8 +129,9 @@ body {
 }
 
 .claimed-emote {
-    width: 128px;
-    height: 128px;
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
 }
 
 .spawn-text {
@@ -152,13 +174,49 @@ body {
     padding: 40px;
     background: #18181b;
     border-radius: 8px;
-    border: 2px solid #gold;
+    border: 2px solid gold;
 }
 
 .victory-emote {
     width: 256px;
     height: 256px;
     margin: 20px 0;
+}
+
+.new-game-btn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 1.2em;
+    background-color: #9147ff;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.new-game-btn:hover {
+    background-color: #772ce8;
+}
+
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    border-radius: 50%;
+    animation: confettiFall 5s linear forwards;
+}
+
+/* Claim animation */
+@keyframes claimPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.cell-claimed {
+    animation: claimPulse 0.5s ease-out;
 }
 
 @keyframes fadeOut {
@@ -183,5 +241,16 @@ body {
     100% { 
         transform: scale(1.5); 
         opacity: 0; 
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
     }
 }

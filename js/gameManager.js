@@ -9,10 +9,22 @@ class GameManager {
         this.spawnedEmotes = new Set();
         this.tribeColors = new Map();
         this.gameEnded = false;
-        
-        this.initializeGrid();
-        this.initializeTickControls();
-        this.startTickTimer();
+        this.winCondition = 4; // Default win condition
+
+        // Wait for DOM to be loaded before initializing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initializeGrid();
+                this.initializeTickControls();
+                this.initializeWinConditionControl();
+                this.startTickTimer();
+            });
+        } else {
+            this.initializeGrid();
+            this.initializeTickControls();
+            this.initializeWinConditionControl();
+            this.startTickTimer();
+        }
     }
 
     generateTribeColor() {
@@ -34,6 +46,8 @@ class GameManager {
 
     initializeGrid() {
         const grid = document.getElementById('game-grid');
+        if (!grid) return; // Safety check
+        
         grid.innerHTML = '';
         for (let i = 0; i < 100; i++) {
             const cell = document.createElement('div');
@@ -64,7 +78,6 @@ class GameManager {
         }
         this.currentTick.spawns[position][emoteName].add(username);
 
-        // Highlight the message
         const lastMessage = document.querySelector('.chat-message:last-child');
         if (lastMessage) {
             lastMessage.style.backgroundColor = '#2a2a2a';
@@ -79,11 +92,9 @@ class GameManager {
         if (!this.spawnedEmotes.has(emoteName)) return;
         if (this.grid[position]) return;
 
-        // Check if user is in the right tribe
         const userTribe = tribeManager.getUserTribe(username);
         if (userTribe !== emoteName) return;
 
-        // Check if position is adjacent to any existing territory
         let isValidAttack = false;
         for (let i = 0; i < 100; i++) {
             if (this.grid[i] === emoteName && this.isAdjacent(i, position)) {
@@ -101,7 +112,6 @@ class GameManager {
         }
         this.currentTick.attacks[position][emoteName].add(username);
 
-        // Highlight the message
         const lastMessage = document.querySelector('.chat-message:last-child');
         if (lastMessage) {
             lastMessage.style.backgroundColor = '#2a2a2a';
@@ -111,35 +121,62 @@ class GameManager {
     checkVictory() {
         // Check horizontal
         for (let row = 0; row < 10; row++) {
-            for (let col = 0; col <= 6; col++) {
+            for (let col = 0; col <= 10 - this.winCondition; col++) {
                 const pos = row * 10 + col;
                 const emote = this.grid[pos];
-                if (emote &&
-                    this.grid[pos + 1] === emote &&
-                    this.grid[pos + 2] === emote &&
-                    this.grid[pos + 3] === emote) {
-                    this.showVictoryScreen(emote);
-                    return true;
+                if (emote) {
+                    let win = true;
+                    for (let i = 1; i < this.winCondition; i++) {
+                        if (this.grid[pos + i] !== emote) {
+                            win = false;
+                            break;
+                        }
+                    }
+                    if (win) {
+                        this.showVictoryScreen(emote);
+                        return true;
+                    }
                 }
             }
         }
 
         // Check vertical
-        for (let row = 0; row <= 6; row++) {
+        for (let row = 0; row <= 10 - this.winCondition; row++) {
             for (let col = 0; col < 10; col++) {
                 const pos = row * 10 + col;
                 const emote = this.grid[pos];
-                if (emote &&
-                    this.grid[pos + 10] === emote &&
-                    this.grid[pos + 20] === emote &&
-                    this.grid[pos + 30] === emote) {
-                    this.showVictoryScreen(emote);
-                    return true;
+                if (emote) {
+                    let win = true;
+                    for (let i = 1; i < this.winCondition; i++) {
+                        if (this.grid[pos + i * 10] !== emote) {
+                            win = false;
+                            break;
+                        }
+                    }
+                    if (win) {
+                        this.showVictoryScreen(emote);
+                        return true;
+                    }
                 }
             }
         }
 
         return false;
+    }
+
+    createConfetti() {
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        for (let i = 0; i < 150; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => confetti.remove(), 5000);
+        }
     }
 
     showVictoryScreen(winningEmote) {
@@ -157,10 +194,52 @@ class GameManager {
         emote.src = emoteMap.get(winningEmote);
         emote.className = 'victory-emote';
         
+        const newGameBtn = document.createElement('button');
+        newGameBtn.textContent = 'New Game';
+        newGameBtn.className = 'new-game-btn';
+        newGameBtn.onclick = () => this.startNewGame();
+        
         content.appendChild(title);
         content.appendChild(emote);
+        content.appendChild(newGameBtn);
         screen.appendChild(content);
         document.body.appendChild(screen);
+        
+        // Add confetti
+        this.createConfetti();
+    }
+
+    startNewGame() {
+        // Clear the grid
+        this.grid = new Array(100).fill(null);
+        this.spawnedEmotes = new Set();
+        this.tribeColors = new Map();
+        this.gameEnded = false;
+        
+        // Clear the UI
+        this.initializeGrid();
+        
+        // Reset tribes
+        window.tribeManager = new TribeManager();
+        
+        // Remove victory screen
+        const victoryScreen = document.querySelector('.victory-screen');
+        if (victoryScreen) {
+            victoryScreen.remove();
+        }
+    }
+
+    initializeWinConditionControl() {
+        const slider = document.getElementById('win-condition-slider');
+        const valueDisplay = document.getElementById('win-condition-value');
+        
+        if (slider && valueDisplay) {
+            slider.addEventListener('input', (e) => {
+                const newValue = parseInt(e.target.value);
+                this.winCondition = newValue;
+                valueDisplay.textContent = newValue;
+            });
+        }
     }
 
     processTick() {
@@ -197,6 +276,8 @@ class GameManager {
                 
                 // Update cell
                 cell.style.backgroundColor = this.tribeColors.get(winningEmote);
+                cell.classList.add('cell-claimed');
+                setTimeout(() => cell.classList.remove('cell-claimed'), 500);
                 
                 while (cell.children.length > 1) { // Keep the number
                     cell.removeChild(cell.lastChild);
@@ -254,6 +335,8 @@ class GameManager {
                 
                 // Update cell
                 cell.style.backgroundColor = this.tribeColors.get(winningEmote);
+                cell.classList.add('cell-claimed');
+                setTimeout(() => cell.classList.remove('cell-claimed'), 500);
                 
                 while (cell.children.length > 1) { // Keep the number
                     cell.removeChild(cell.lastChild);
@@ -293,11 +376,12 @@ class GameManager {
 
     initializeTickControls() {
         const slider = document.getElementById('tick-slider');
-        
-        slider.addEventListener('input', (e) => {
-            const newDuration = parseInt(e.target.value) * 1000;
-            this.nextTickDuration = newDuration;
-        });
+        if (slider) {
+            slider.addEventListener('input', (e) => {
+                const newDuration = parseInt(e.target.value) * 1000;
+                this.nextTickDuration = newDuration;
+            });
+        }
     }
 
     startTickTimer() {
@@ -307,7 +391,9 @@ class GameManager {
         const updateTimer = () => {
             if (this.gameEnded) return;
             
-            timer.textContent = `Next tick in: ${(timeLeft / 1000).toFixed(1)}s`;
+            if (timer) {
+                timer.textContent = `Next tick in: ${(timeLeft / 1000).toFixed(1)}s`;
+            }
             timeLeft -= 100;
             
             if (timeLeft <= 0) {
