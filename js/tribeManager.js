@@ -4,6 +4,10 @@ class TribeManager {
         this.userTribes = new Map(); // user -> emote
     }
 
+    getUserTribe(username) {
+        return this.userTribes.get(username);
+    }
+
     updateTribes(emote, users) {
         // Create tribe if it doesn't exist
         if (!this.tribes.has(emote)) {
@@ -14,7 +18,7 @@ class TribeManager {
         users.forEach(user => {
             // Remove from old tribe if exists
             const oldTribe = this.userTribes.get(user);
-            if (oldTribe) {
+            if (oldTribe && oldTribe !== emote) {
                 this.tribes.get(oldTribe).delete(user);
             }
 
@@ -45,6 +49,11 @@ class TribeManager {
                 const userList = document.createElement('span');
                 userList.textContent = Array.from(users).join(', ');
                 tribeDiv.appendChild(userList);
+
+                // Apply tribe color as background
+                if (gameManager.tribeColors.has(emote)) {
+                    tribeDiv.style.backgroundColor = gameManager.tribeColors.get(emote);
+                }
 
                 container.appendChild(tribeDiv);
             }

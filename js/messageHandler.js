@@ -43,11 +43,20 @@ function onMessageHandler(target, context, msg, self) {
     
     // Check for spawn command
     const spawnMatch = msg.match(/^\+spawn\s+(\S+)\s+(\d+)/);
+    const attackMatch = msg.match(/^\+attack\s+(\S+)\s+(\d+)/);
+    
     if (spawnMatch && emoteMap.has(spawnMatch[1])) {
         gameManager.handleSpawnAttempt(
             context['display-name'],
             spawnMatch[1],
             spawnMatch[2],
+            context
+        );
+    } else if (attackMatch && emoteMap.has(attackMatch[1])) {
+        gameManager.handleAttackAttempt(
+            context['display-name'],
+            attackMatch[1],
+            attackMatch[2],
             context
         );
     }

@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="game-container">
-        <!-- Left sidebar -->
         <div class="sidebar">
             <div id="chat-container"></div>
             <div id="tribe-list">
@@ -18,7 +17,6 @@
             </div>
         </div>
 
-        <!-- Main game area -->
         <div class="main-content">
             <div class="tick-control">
                 <div id="tick-timer">Next tick in: 5s</div>
@@ -33,12 +31,16 @@
         </div>
     </div>
 
-    <!-- Load our JS files in correct order -->
-    <script src="js/emoteHandler.js"></script>
+    <!-- Load classes first -->
     <script src="js/gameManager.js"></script>
     <script src="js/tribeManager.js"></script>
+    
+    <!-- Load utilities and handlers -->
+    <script src="js/emoteHandler.js"></script>
     <script src="js/messageHandler.js"></script>
     <script src="js/client.js"></script>
+    
+    <!-- Initialize everything -->
     <script src="js/main.js"></script>
 </body>
 </html>

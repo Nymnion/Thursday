@@ -12,7 +12,6 @@ body {
     height: calc(100vh - 40px);
 }
 
-/* Sidebar styling */
 .sidebar {
     width: 300px;
     display: flex;
@@ -36,7 +35,15 @@ body {
     overflow-y: auto;
 }
 
-/* Main content styling */
+.tribe {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
 .main-content {
     flex-grow: 1;
     display: flex;
@@ -45,9 +52,11 @@ body {
     gap: 20px;
 }
 
-/* Tick control styling */
 .tick-control {
     text-align: center;
+    background: #18181b;
+    padding: 16px;
+    border-radius: 4px;
 }
 
 #tick-timer {
@@ -66,12 +75,11 @@ body {
     width: 200px;
 }
 
-/* Grid styling */
 #game-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 8px;
-    max-width: 800px;
+    max-width: 1000px;
     width: 100%;
     aspect-ratio: 1;
 }
@@ -84,39 +92,83 @@ body {
     justify-content: center;
     position: relative;
     font-weight: bold;
-    transition: transform 0.2s;
-}
-
-.grid-cell:hover {
-    transform: scale(1.05);
+    transition: all 0.3s ease;
+    background-color: #2a2a2a;
+    border: 2px solid #3a3a3a;
+    color: white;
+    min-height: 128px;
 }
 
 .grid-number {
-    font-size: 0.8em;
+    font-size: 1em;
     position: absolute;
     top: 5px;
     left: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.claimed-emote {
+    width: 128px;
+    height: 128px;
 }
 
 .spawn-text {
     position: absolute;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.8em;
     white-space: nowrap;
     animation: fadeOut 2s forwards;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    bottom: -25px;
 }
 
 .spawn-fail {
     position: absolute;
     font-size: 2em;
     animation: poof 0.5s forwards;
+    z-index: 10;
+}
+
+.victory-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.victory-content {
+    text-align: center;
+    padding: 40px;
+    background: #18181b;
+    border-radius: 8px;
+    border: 2px solid #gold;
+}
+
+.victory-emote {
+    width: 256px;
+    height: 256px;
+    margin: 20px 0;
 }
 
 @keyframes fadeOut {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes poof {
@@ -132,33 +184,4 @@ body {
         transform: scale(1.5); 
         opacity: 0; 
     }
-}
-
-/* Chat message styling */
-.chat-message {
-    margin-bottom: 8px;
-    word-wrap: break-word;
-    padding: 2px 4px;
-    border-radius: 4px;
-}
-
-.username {
-    font-weight: bold;
-    margin-right: 8px;
-}
-
-.message {
-    color: #efeff1;
-}
-
-.chat-emote {
-    vertical-align: middle;
-    display: inline-block;
-    max-height: 32px;
-    width: auto;
-}
-
-.claimed-emote {
-    width: 64px;
-    height: 64px;
 }
